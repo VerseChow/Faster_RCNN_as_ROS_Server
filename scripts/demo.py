@@ -52,16 +52,18 @@ if __name__ == '__main__':
     for i in xrange(2):
         _, _= im_detect(net, im)
     '''
-    obj_detsys.bbox_detection_server()
-    #im_names = glob.glob(os.path.join(cfg.DATA_DIR, 'demo', '*.jpg'))
-    '''
+    #obj_detsys.bbox_detection_server()
+    im_names = sorted(glob.glob(os.path.join(cfg.DATA_DIR, 'demo', '*.jpg')))
+    if not os.path.exists('./results'):
+        os.makedirs('./results')
+
     for im_path in im_names:
         im_name = os.path.basename(im_path)
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)
         im = cv2.imread(im_path)
-        obj_detsys.image_process(im)
-    '''
+        obj_detsys.demo(im_name)
+    
     #plt.show()
     
 

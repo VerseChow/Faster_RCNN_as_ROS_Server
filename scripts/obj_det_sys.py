@@ -28,8 +28,8 @@ class obj_detection_system:
 
     def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.5, NMS_THRESH = 0.005):
         self.net = net
-        self.CONF_THRESH = 0.5
-        self.NMS_THRESH = 0.005
+        self.CONF_THRESH = CONF_THRESH
+        self.NMS_THRESH = NMS_THRESH
         self.gpu_flag = gpu_flag
         self.gpu_device = gpu_device
 
@@ -110,6 +110,8 @@ class obj_detection_system:
                          'p(class | box) >= {:.1f}').format(self.CONF_THRESH),
                           fontsize=14)
         ax.imshow(im, aspect='equal')
+
+        plt.savefig('./results/'+os.path.basename(im_file))
             
 
     def image_process(self, im):
