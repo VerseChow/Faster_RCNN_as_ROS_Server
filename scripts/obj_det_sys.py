@@ -26,7 +26,7 @@ class obj_detection_system:
            'chair', 'table')
 
 
-    def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.5, NMS_THRESH = 0.005):
+    def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.8, NMS_THRESH = 0.005):
         self.net = net
         self.CONF_THRESH = CONF_THRESH
         self.NMS_THRESH = NMS_THRESH
@@ -112,6 +112,8 @@ class obj_detection_system:
         ax.imshow(im, aspect='equal')
 
         plt.savefig('./results/'+os.path.basename(im_file))
+
+        return cv2.imread('./results/'+os.path.basename(im_file))
             
 
     def image_process(self, im):
@@ -159,7 +161,7 @@ class obj_detection_system:
             caffe.set_mode_gpu()
             caffe.set_device(self.gpu_device)
         else:
-            caffe.set_mode_cpu()
+            caffe.set_mode_cpu()    
         
         return self.image_process(image)
 
