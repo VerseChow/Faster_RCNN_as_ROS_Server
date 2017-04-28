@@ -1,3 +1,6 @@
 [submodule "scripts/caffe-fast-rcnn"]
 	path = scripts/caffe-fast-rcnn
 	url = https://github.com/rbgirshick/caffe-fast-rcnn.git
+[submodule "caffe_fast_rcnn"]
+	path = scripts/caffe-fast-rcnn
+	url = https://github.com/rbgirshick/caffe-fast-rcnn.git
