@@ -26,7 +26,7 @@ class obj_detection_system:
            'chair', 'table')
 
 
-    def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.8, NMS_THRESH = 0.005):
+    def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.5, NMS_THRESH = 0.005):
         self.net = net
         self.CONF_THRESH = CONF_THRESH
         self.NMS_THRESH = NMS_THRESH

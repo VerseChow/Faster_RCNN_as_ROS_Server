@@ -39,7 +39,7 @@ def draw_lines_text(im, bbox, txt, index):
 if __name__=="__main__":
 
 	im_list = sorted(glob.glob("./data/demo/*.jpg"))
-	 
+
 	for im in im_list:
 		cv2.namedWindow('image', cv2.WINDOW_AUTOSIZE)
 		
