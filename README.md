@@ -15,7 +15,7 @@ To run this demo, you have to install caffe_model as mentioned in [py-faster-rcn
 1. Please recursive clone my repo, make sure you have included caffe-fast-rcnn folder in scripts folder 
 2. In scripts/caffe-fast-rcnn folder, make sure you have changed the branch to faster-rcnn branch, not master branch
 3. In scripts/caffe-fast-rcnn folder, make a copy of Makefile.config.example as Make.config and uncomment the line: WITH_PYTHON_LAYER := 1
-4. In scripts/caffe-fast-rcnn folder, add opencv_imgcodecs in file Makefile. It is around the line 174 in LIBRARIES variable. Then run ``make`` and ``make python``.
+4. In scripts/caffe-fast-rcnn folder, add opencv_imgcodecs in file Makefile. It is around the line 174 in LIBRARIES variable. Then run ``make`` and ``make python``. And pip install *scikit-image*, *easydict*
 5. In scripts/data/demo folder, include test images and make sure in client.py in scripts folder has specified the path of these test images.
 6. In scripts/data/faster_rcnn_models, include pretrained model and make sure in demo.py in scripts folder has specified the path of pretrained model.
 7. Run demo.py first, then run client.py
