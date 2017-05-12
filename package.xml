@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>Faster_RCNN_as_ROS_Server</name>
+  <name>faster_rcnn_object_detector</name>
   <version>0.0.0</version>
-  <description>The obj_detection package</description>
+  <description>The faster_rcnn_object_detector package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->

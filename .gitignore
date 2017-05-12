@@ -3,3 +3,9 @@
 *.prototxt~
 *.png
 *.jpg
+*.kdev4
+.kdev4/
+scripts/cv2
+scripts/glob
+scripts/lib
+scripts/rospy
