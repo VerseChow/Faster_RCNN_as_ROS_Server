@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(obj_detection)
+cmake_minimum_required(VERSION 2.08.3)
+project(Faster_RCNN_as_ROS_Server)
 
 ## Add support for C++11, supported in ROS Kinetic and newer
 # add_definitions(-std=c++11)
@@ -106,8 +106,7 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES obj_detection
+  LIBRARIES Faster_RCNN_as_ROS_Server
   CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
   DEPENDS system_lib
 )

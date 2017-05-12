@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>obj_detection</name>
+  <name>Faster_RCNN_as_ROS_Server</name>
   <version>0.0.0</version>
   <description>The obj_detection package</description>
 
