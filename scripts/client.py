@@ -1,5 +1,5 @@
-from obj_detection.srv import *    
-from obj_detection.msg import *
+from faster_rcnn_object_detector.srv import *    
+from faster_rcnn_object_detector.msg import *
 import rospy
 import cv2
 import glob
@@ -32,8 +32,8 @@ def image_grab_client(im):
 
 def draw_lines_text(im, bbox, txt, index):
 	font = cv2.FONT_HERSHEY_SIMPLEX
-	cv2.rectangle(im,(bbox.bbox_xmin[index],bbox.bbox_ymin[index]),(bbox.bbox_xmax[index],bbox.bbox_ymax[index]),(0,255,0),8)
-	cv2.putText(im, txt, (bbox.bbox_xmin[index],bbox.bbox_ymin[index]), font, 4,(255,255,255),8,cv2.LINE_AA)
+	cv2.rectangle(im,(bbox.bbox_xmin[index],bbox.bbox_ymin[index]),(bbox.bbox_xmax[index],bbox.bbox_ymax[index]),(0,255,0),4)
+	cv2.putText(im, txt, (bbox.bbox_xmin[index],bbox.bbox_ymin[index]), font, 2,(255,255,255),4)
 
 
 if __name__=="__main__":
@@ -46,8 +46,8 @@ if __name__=="__main__":
 		image = cv2.imread(im)
 			
 		image = image_grab_client(image)
-		cv2.imshow('image',image)
-		cv2.waitKey(10)
+		#cv2.imshow('image',image)
+		#cv2.waitKey(-1)
 
 
 		
