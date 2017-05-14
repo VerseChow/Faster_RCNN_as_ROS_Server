@@ -1,7 +1,7 @@
 import _init_paths
 
-from obj_detection.srv import *    
-from obj_detection.msg import *
+from faster_rcnn_object_detector.srv import *    
+from faster_rcnn_object_detector.msg import *
 import rospy
 
 
