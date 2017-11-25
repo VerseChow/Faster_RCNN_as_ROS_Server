@@ -22,7 +22,12 @@ import glob
 
 class obj_detection_system:
 
-    CLASSES = cfg.CLASSES
+    #CLASSES = cfg.CLASSES
+    #print CLASSES
+
+    #CLASSES = ('__background__', 'person', 'bicycle', 'car','motorcycle','airplane','bus','train', 'truck', 'boat','traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench','bird','cat','dog','horse','sheep','cow', 'elephant','bear','zebra','giraffe','hat','umbrella', 'handbag','tie','suitcase', 'frisbee','skis','snowboard','sports ball','kite', 'baseball bat','baseball glove','skateboard','surfboard','tennis racket', 'bottle','wine glass','cup','fork','knife','spoon','bowl','banana','apple','sandwich', 'orange','broccoli','carrot','hot dog','pizza','donut','cake','chair','couch','potted plant', 'bed','dining table','window','tv','laptop','mouse','remote','keyboard','cell phone','microwave', 'oven', 'sink','refrigerator','blender','book','clock','vase','scissors','teddy bear','hair drier','tooth brush')
+    #print CLASSES
+    #sys.exit(0)
 
     def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.9, NMS_THRESH = 0.005):
         self.net = net
@@ -30,6 +35,7 @@ class obj_detection_system:
         self.NMS_THRESH = NMS_THRESH
         self.gpu_flag = gpu_flag
         self.gpu_device = gpu_device
+        self.CLASSES = cfg.CLASSES
 
     def get_bbox(self, im, class_name, dets, thresh=0.0):
         inds = np.where(dets[:, -1] >= thresh)[0]
