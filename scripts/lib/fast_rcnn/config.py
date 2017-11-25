@@ -163,6 +163,10 @@ __C.TEST.RPN_POST_NMS_TOP_N = 300
 # Proposal height and width both need to be greater than RPN_MIN_SIZE (at orig image scale)
 __C.TEST.RPN_MIN_SIZE = 16
 
+__C.PRETRAINED = False
+
+__C.CLASSES = ()
+
 
 #
 # MISC
@@ -193,7 +197,7 @@ __C.ROOT_DIR = osp.abspath(osp.join(osp.dirname(__file__), '..', '..'))
 __C.DATA_DIR = osp.abspath(osp.join(__C.ROOT_DIR, 'data'))
 
 # Model directory
-__C.MODELS_DIR = osp.abspath(osp.join(__C.ROOT_DIR, 'models', 'progress'))
+__C.MODELS_DIR = osp.abspath(osp.join(__C.ROOT_DIR, 'models',))
 
 # Name (or path to) the matlab executable
 __C.MATLAB = 'matlab'

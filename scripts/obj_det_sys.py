@@ -22,11 +22,9 @@ import glob
 
 class obj_detection_system:
 
-    CLASSES = ('__background__',
-           'chair', 'table')
+    CLASSES = cfg.CLASSES
 
-
-    def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.5, NMS_THRESH = 0.005):
+    def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.9, NMS_THRESH = 0.005):
         self.net = net
         self.CONF_THRESH = CONF_THRESH
         self.NMS_THRESH = NMS_THRESH
@@ -38,12 +36,13 @@ class obj_detection_system:
         if len(inds) == 0:
             return None
         bbox = np.empty((0,4), float)
+        score = np.empty((0,1), float)
         for i in inds:
             bbox = np.append(bbox, np.array([dets[i, :4]]), axis = 0)
-            score = dets[i, -1]
+            score = np.append(score, dets[i, -1])
         
         #bbox = [xmin, ymin, xmax, ymax]
-        return bbox
+        return {'bbox': bbox, 'score': score}
 
     def vis_detections(self, im, class_name, dets, ax,thresh=0.0):
 
@@ -137,16 +136,20 @@ class obj_detection_system:
                               cls_scores[:, np.newaxis])).astype(np.float32)
             keep = nms(dets, self.NMS_THRESH)
             dets = dets[keep, :]
-            bbox = self.get_bbox(im, cls, dets, thresh=self.CONF_THRESH)
+            detection_result = self.get_bbox(im, cls, dets, thresh=self.CONF_THRESH)
             print 'Detected Object in '+cls
-            print bbox
-            if bbox is not None:
+            print detection_result
+            if detection_result is not None:
+                bbox = detection_result['bbox'] 
+                score = detection_result['score']
+                
                 Object = ObjectInfo()
                 Object.label = cls
                 Object.bbox_xmin = bbox[:,0]
                 Object.bbox_ymin = bbox[:,1]
                 Object.bbox_xmax = bbox[:,2]
                 Object.bbox_ymax = bbox[:,3]
+                Object.score = score
                 resp.objects.append(Object)
 
         return resp

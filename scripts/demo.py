@@ -1,8 +1,14 @@
 from obj_det_sys import *
 
+progress_coco_class = ('__background__', 'table', 'tide', 'downy', 'clorox', 'coke', 'cup')
+coco_class = ('__background__', 'person', 'bicycle', 'car','motorcycle','airplane','bus','train', 'truck', 'boat','traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench','bird','cat','dog','horse','sheep','cow', 'elephant','bear','zebra','giraffe','hat','umbrella', 'handbag','tie','suitcase', 'frisbee','skis','snowboard','sports ball','kite', 'baseball bat','baseball glove','skateboard','surfboard','tennis racket', 'bottle','wine glass','cup','fork','knife','spoon','bowl','banana','apple','sandwich', 'orange','broccoli','carrot','hot dog','pizza','donut','cake','chair','couch','potted plant', 'bed','dining table','window','tv','laptop','mouse','remote','keyboard','cell phone','microwave', 'oven', 'sink','refrigerator','blender','book','clock','vase','scissors','teddy bear','hair drier','tooth brush')
+complete_class =  ('__background__', 'chair', 'table', 'lobby_chair', 'lobby_table_small', 'lobby_table_large', 
+    'tide', 'spray_bottle_a', 'waterpot', 'sugar', 'red_bowl', 'clorox', 'shampoo', 
+    'downy', 'salt', 'toy', 'detergent', 'scotch_brite', 'blue_cup', 'ranch')
 
-NETS = {'vgg16': ('VGG16',
-                  'vgg16_faster_rcnn_iter_50000.caffemodel')}
+NETS = {'progress_coco': ('progress_coco', 'coco_vgg16.5objects1table', 0, progress_coco_class),
+        'coco': ('coco', 'coco_vgg16_faster_rcnn_final.caffemodel', 1, coco_class)}
+        # key: (name of folder, model name, pre-trained or not, tuples of class)
 
 def parse_args():
     """Parse input arguments."""
@@ -13,21 +19,20 @@ def parse_args():
                         help='Use CPU mode (overrides --gpu)',
                         action='store_true')
     parser.add_argument('--net', dest='demo_net', help='Network to use [vgg16]',
-                        choices=NETS.keys(), default='vgg16')
+                        choices=NETS.keys(), default='coco')
 
     args = parser.parse_args()
 
     return args
 
-if __name__ == '__main__':
-    cfg.TEST.HAS_RPN = True  # Use RPN for proposals
-
-    args = parse_args()
-
-    prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
+def object_detector(args):
+    prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0], 'VGG16',
                             'faster_rcnn_end2end', 'test.prototxt')
     caffemodel = os.path.join(cfg.DATA_DIR, 'faster_rcnn_models',
                               NETS[args.demo_net][1])
+
+    cfg.PRETRAINED = NETS[args.demo_net][2]
+    cfg.CLASSES = NETS[args.demo_net][3]
 
     if not os.path.isfile(caffemodel):
         raise IOError(('{:s} not found.\nDid you run ./data/script/'
@@ -45,6 +50,16 @@ if __name__ == '__main__':
 
     obj_detsys = obj_detection_system(net, gpu_flag = (not args.cpu_mode), gpu_device = args.gpu_id)
     print '\n\nLoaded network {:s}'.format(caffemodel)
+    
+    return obj_detsys
+
+
+if __name__ == '__main__':
+    cfg.TEST.HAS_RPN = True  # Use RPN for proposals
+
+    args = parse_args()
+    
+    obj_detsys = object_detector(args)
     
     # Warmup on a dummy image
     '''

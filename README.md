@@ -21,3 +21,10 @@ To run this demo, you have to install caffe_model as mentioned in [py-faster-rcn
 7. Run demo.py first, then run client.py
 
 The demo video is shown on following youtube link [demo](https://www.youtube.com/watch?v=3dvnhPWKLrA)
+
+### Use demo.py
+Use `--net NET_NAME` to indicate which trained model to use, as being specified in
+```
+NETS = {key: (name of folder, model name, pre-trained or not, tuples of class)}
+```
+
