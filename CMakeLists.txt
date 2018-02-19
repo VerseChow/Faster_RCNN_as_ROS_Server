@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   cv_bridge
 )
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 2.4.8 EXACT REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -54,11 +54,13 @@ find_package(OpenCV REQUIRED)
 add_message_files(
    FILES
    ObjectInfo.msg
+   BBoxInfo.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
    FILES
+   ImageToObject.srv
    ImageToBBox.srv
 )
 

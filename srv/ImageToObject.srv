@@ -1,4 +1,4 @@
 
 sensor_msgs/Image image
 ---
-BBoxInfo[] bbox
+ObjectInfo[] objects

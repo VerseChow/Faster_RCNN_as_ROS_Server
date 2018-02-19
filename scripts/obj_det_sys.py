@@ -29,7 +29,7 @@ class obj_detection_system:
     #print CLASSES
     #sys.exit(0)
 
-    def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.9, NMS_THRESH = 0.005):
+    def __init__(self, net, gpu_flag = True, gpu_device = 0, CONF_THRESH = 0.6, NMS_THRESH = 0.005):
         self.net = net
         self.CONF_THRESH = CONF_THRESH
         self.NMS_THRESH = NMS_THRESH
@@ -48,7 +48,8 @@ class obj_detection_system:
             score = np.append(score, dets[i, -1])
         
         #bbox = [xmin, ymin, xmax, ymax]
-        return {'bbox': bbox, 'score': score}
+        inds = inds.tolist()
+        return {'bbox': bbox, 'score': score, 'inds': inds}
 
     def vis_detections(self, im, class_name, dets, ax,thresh=0.0):
 
@@ -123,6 +124,49 @@ class obj_detection_system:
 
     def image_process(self, im):
         # Detect all object classes and regress object bounds
+        resp = ImageToObjectResponse()
+
+        timer = Timer()
+        timer.tic()
+        scores, boxes = im_detect(self.net, im)
+
+        timer.toc()
+        print ('Detection took {:.3f}s for '
+               '{:d} object proposals').format(timer.total_time, boxes.shape[0])
+
+        for cls_ind, cls in enumerate(self.CLASSES[1:]):
+
+            cls_ind += 1 # because we skipped background
+            cls_boxes = boxes[:, 4*cls_ind:4*(cls_ind + 1)]
+            cls_scores = scores[:, cls_ind]
+            dets = np.hstack((cls_boxes,
+                              cls_scores[:, np.newaxis])).astype(np.float32)
+            #print dets
+            keep = nms(dets, self.NMS_THRESH)
+            dets = dets[keep, :]
+            detection_result = self.get_bbox(im, cls, dets, thresh=self.CONF_THRESH)
+            print 'Detected Object in '+cls
+            print detection_result
+            
+            if detection_result is not None:
+                bbox = detection_result['bbox'] 
+                score = detection_result['score']
+                
+                Object = ObjectInfo()
+                Object.label = cls
+                Object.bbox_xmin = bbox[:,0]
+                Object.bbox_ymin = bbox[:,1]
+                Object.bbox_xmax = bbox[:,2]
+                Object.bbox_ymax = bbox[:,3]
+                Object.score = score
+                resp.objects.append(Object)
+
+            print '***************************************'
+            
+        return resp
+    
+    def image_process_bbox_with_nms(self, im):
+        # Detect all object classes and regress object bounds
         resp = ImageToBBoxResponse()
 
         timer = Timer()
@@ -140,27 +184,95 @@ class obj_detection_system:
             cls_scores = scores[:, cls_ind]
             dets = np.hstack((cls_boxes,
                               cls_scores[:, np.newaxis])).astype(np.float32)
+            #print dets
             keep = nms(dets, self.NMS_THRESH)
             dets = dets[keep, :]
             detection_result = self.get_bbox(im, cls, dets, thresh=self.CONF_THRESH)
             print 'Detected Object in '+cls
             print detection_result
+            
             if detection_result is not None:
                 bbox = detection_result['bbox'] 
                 score = detection_result['score']
                 
-                Object = ObjectInfo()
-                Object.label = cls
-                Object.bbox_xmin = bbox[:,0]
-                Object.bbox_ymin = bbox[:,1]
-                Object.bbox_xmax = bbox[:,2]
-                Object.bbox_ymax = bbox[:,3]
-                Object.score = score
-                resp.objects.append(Object)
+                test_index = [keep[i] for i in detection_result['inds']]
+                all_score = scores[test_index, 1:]
+                
+                i = 0
+                for box in bbox:
+                    BBox = BBoxInfo()
+                    BBox.bbox_xmin = int(box[0])
+                    BBox.bbox_ymin = int(box[1])
+                    BBox.bbox_xmax = int(box[2])
+                    BBox.bbox_ymax = int(box[3])
+                    BBox.label = self.CLASSES[1:]
+                    BBox.score = all_score[i,:].tolist()
+                    BBox.max_label = cls
+                    BBox.max_score = score[i]
+                    
+                    print BBox.label
+                    print BBox.score
+                    print BBox.max_score
+                    
+                    i=i+1
+                    resp.bbox.append(BBox)
 
+            print '***************************************'
+            
+        return resp
+    
+    def image_process_bbox_without_nms(self, im):
+        # Detect all object classes and regress object bounds
+        resp = ImageToBBoxResponse()
+
+        timer = Timer()
+        timer.tic()
+        scores, boxes = im_detect(self.net, im)
+        
+        scores = scores[:,1:]
+        max_scores = np.max(scores, axis=1)
+
+        timer.toc()
+        print ('Detection took {:.3f}s for '
+               '{:d} object proposals').format(timer.total_time, boxes.shape[0])
+
+        boxes = boxes[:, 0:4]
+        dets = np.hstack((boxes, max_scores[:, np.newaxis])).astype(np.float32)
+        detection_result = self.get_bbox(im, '', dets, thresh=self.CONF_THRESH)
+        print 'Detected BBox ' + str(len(detection_result['inds']))
+        print detection_result
+        
+        if detection_result is not None:
+            bbox = detection_result['bbox'] 
+            test_index = detection_result['inds']
+            all_score = scores[test_index, :]
+            
+            i = 0
+            for box in bbox:
+                BBox = BBoxInfo()
+                BBox.bbox_xmin = int(box[0])
+                BBox.bbox_ymin = int(box[1])
+                BBox.bbox_xmax = int(box[2])
+                BBox.bbox_ymax = int(box[3])
+                BBox.label = self.CLASSES[1:]
+                BBox.score = all_score[i,:].tolist()
+                
+                max_score_index = all_score[i,:].argmax()
+                BBox.max_label = BBox.label[max_score_index]
+                BBox.max_score = BBox.score[max_score_index]
+                
+                print BBox.label
+                print BBox.score
+                print BBox.max_score
+                
+                i=i+1
+                resp.bbox.append(BBox)
+
+            print '***************************************'
+            
         return resp
 
-    def handle_image(self, req):
+    def handle_image_objects(self, req):
         print "Received Image, start Detection"
         image = req.image
         bridge = CvBridge()
@@ -174,8 +286,24 @@ class obj_detection_system:
         
         return self.image_process(image)
 
+    def handle_image_bbox(self, req):
+        print "Received Image, start Detection"
+        image = req.image
+        bridge = CvBridge()
+        image = bridge.imgmsg_to_cv2(image, "bgr8")
+        
+        if self.gpu_flag:
+            caffe.set_mode_gpu()
+            caffe.set_device(self.gpu_device)
+        else:
+            caffe.set_mode_cpu()    
+        
+        return self.image_process_bbox_with_nms(image)
+        #return self.image_process_bbox_without_nms(image)
+
     def bbox_detection_server(self):
         rospy.init_node('object_detection_server')
-        s = rospy.Service('object_detection', ImageToBBox, self.handle_image)
+        #s = rospy.Service('object_detection', ImageToObject, self.handle_image_objects)
+        s = rospy.Service('object_detection', ImageToBBox, self.handle_image_bbox)
         print "Ready for Object Detection"
         rospy.spin()

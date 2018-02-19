@@ -8,10 +8,10 @@ input_shape {
   dim: 224
 }
 
-input: "im_info"
+input: "rois"
 input_shape {
-  dim: 1
-  dim: 3
+  dim: 1 # to be changed on-the-fly to num ROIs
+  dim: 5 # [batch ind, x1, y1, x2, y2] zero-based indexing
 }
 
 layer {
@@ -383,102 +383,11 @@ layer {
   bottom: "conv5_3"
   top: "conv5_3"
 }
-
-#========= RPN ============
-
-layer {
-  name: "rpn_conv/3x3"
-  type: "Convolution"
-  bottom: "conv5_3"
-  top: "rpn/output"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 512
-    kernel_size: 3 pad: 1 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-  name: "rpn_relu/3x3"
-  type: "ReLU"
-  bottom: "rpn/output"
-  top: "rpn/output"
-}
-
-layer {
-  name: "rpn_cls_score"
-  type: "Convolution"
-  bottom: "rpn/output"
-  top: "rpn_cls_score"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 24   # 2(bg/fg) * 12(anchors)
-    kernel_size: 1 pad: 0 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-  name: "rpn_bbox_pred"
-  type: "Convolution"
-  bottom: "rpn/output"
-  top: "rpn_bbox_pred"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 48   # 4 * 12(anchors)
-    kernel_size: 1 pad: 0 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-   bottom: "rpn_cls_score"
-   top: "rpn_cls_score_reshape"
-   name: "rpn_cls_score_reshape"
-   type: "Reshape"
-   reshape_param { shape { dim: 0 dim: 2 dim: -1 dim: 0 } }
-}
-
-#========= RoI Proposal ============
-
-layer {
-  name: "rpn_cls_prob"
-  type: "Softmax"
-  bottom: "rpn_cls_score_reshape"
-  top: "rpn_cls_prob"
-}
-layer {
-  name: 'rpn_cls_prob_reshape'
-  type: 'Reshape'
-  bottom: 'rpn_cls_prob'
-  top: 'rpn_cls_prob_reshape'
-  reshape_param { shape { dim: 0 dim: 24 dim: -1 dim: 0 } }
-}
-layer {
-  name: 'proposal'
-  type: 'Python'
-  bottom: 'rpn_cls_prob_reshape'
-  bottom: 'rpn_bbox_pred'
-  bottom: 'im_info'
-  top: 'rpn_rois'
-  python_param {
-    module: 'rpn.proposal_layer'
-    layer: 'ProposalLayer'
-    param_str: "'feat_stride': 16 \n'scales': !!python/tuple [4, 8, 16, 32]"
-  }
-}
-
-#========= RCNN ============
-
 layer {
   name: "roi_pool5"
   type: "ROIPooling"
   bottom: "conv5_3"
-  bottom: "rpn_rois"
+  bottom: "rois"
   top: "pool5"
   roi_pooling_param {
     pooled_w: 7
@@ -533,10 +442,10 @@ layer {
   top: "fc7"
 }
 layer {
-  name: "cls_score_progress"
+  name: "cls_score"
   type: "InnerProduct"
   bottom: "fc7"
-  top: "cls_score_progress"
+  top: "cls_score"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -558,10 +467,10 @@ layer {
   }
 }
 layer {
-  name: "bbox_pred_progress"
+  name: "bbox_pred"
   type: "InnerProduct"
   bottom: "fc7"
-  top: "bbox_pred_progress"
+  top: "bbox_pred"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -585,6 +494,6 @@ layer {
 layer {
   name: "cls_prob"
   type: "Softmax"
-  bottom: "cls_score_progress"
+  bottom: "cls_score"
   top: "cls_prob"
 }
