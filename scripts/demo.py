@@ -7,11 +7,15 @@ complete_class =  ('__background__', 'chair', 'table', 'lobby_chair', 'lobby_tab
     'tide', 'spray_bottle_a', 'waterpot', 'sugar', 'red_bowl', 'clorox', 'shampoo', 
     'downy', 'salt', 'toy', 'detergent', 'scotch_brite', 'blue_cup', 'ranch')
 iros_coco_class = ('__background__', 'apple', 'bowl', 'cereal', 'coke', 'cup', 'milk', 'pringle')
+progressiros_class = ('__background__',
+                       'apple', 'bowl', 'cereal', 'coke', 'cup', 'milk', 'pringle', 'table', 'shampoo',
+                       'alum_cup', 'dispenser', 'loofah', 'rack')
 
 NETS = {'progress_coco': ('progress_coco', 'coco_vgg16.5objects1table', 0, progress_coco_class),
         'progress_pascal': ('progress_pascal', 'vgg16_faster_rcnn.caffemodel.5objects_1table', 0, progress_pascal_class),
 	'coco': ('coco', 'coco_vgg16_faster_rcnn_final.caffemodel', 1, coco_class),
-	'iros_coco': ('iros_coco', 'vgg16_faster_rcnn_iter_10000.iros_2.7objects', 0, iros_coco_class)}
+	'iros_coco': ('iros_coco', 'vgg16_faster_rcnn_iter_10000.iros_2.7objects', 0, iros_coco_class),
+    'progressiros': ('progressiros', 'vgg16_faster_rcnn_iter_43020.iros.13obj', 0, progressiros_class)}
         # key: (name of folder, model name, pre-trained or not, tuples of class)
 
 def parse_args():

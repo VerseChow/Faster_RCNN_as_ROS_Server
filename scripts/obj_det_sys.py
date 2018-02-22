@@ -298,8 +298,8 @@ class obj_detection_system:
         else:
             caffe.set_mode_cpu()    
         
-        return self.image_process_bbox_with_nms(image)
-        #return self.image_process_bbox_without_nms(image)
+        return self.image_process_bbox_with_nms(image) # prefer this one!
+        #return self.image_process_bbox_without_nms(image) # give somewhat multiple bad bbox for one object instance
 
     def bbox_detection_server(self):
         rospy.init_node('object_detection_server')
