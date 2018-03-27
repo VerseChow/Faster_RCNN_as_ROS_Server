@@ -9,3 +9,5 @@ scripts/cv2
 scripts/glob
 scripts/lib
 scripts/rospy
+*~
+*.swp

@@ -210,6 +210,7 @@ __C.GPU_ID = 0
 
 __C.proj_name = {'coco': ('cls_score', 'bbox_pred'),
                 'progress': ('cls_score_progress', 'bbox_pred_progress'),
+                'iros_coco': ('cls_score_progress', 'bbox_pred_progress'),
                 'iros': ('cls_score_iros_13obj', 'bbox_pred_iros_13obj')}
 __C.option = 'iros'
 
