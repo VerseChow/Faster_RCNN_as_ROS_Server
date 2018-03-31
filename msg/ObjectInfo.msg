@@ -1,5 +1,6 @@
 #Object Information
 string label
+string[] all_label
 #bbox Information
 int32[] bbox_xmin
 int32[] bbox_ymin

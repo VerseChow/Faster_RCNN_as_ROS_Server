@@ -154,6 +154,7 @@ class obj_detection_system:
                 
                 Object = ObjectInfo()
                 Object.label = cls
+                Object.all_label = self.CLASSES[1:]
                 Object.bbox_xmin = bbox[:,0]
                 Object.bbox_ymin = bbox[:,1]
                 Object.bbox_xmax = bbox[:,2]
@@ -303,7 +304,7 @@ class obj_detection_system:
 
     def bbox_detection_server(self):
         rospy.init_node('object_detection_server')
-        #s = rospy.Service('object_detection', ImageToObject, self.handle_image_objects)
-        s = rospy.Service('object_detection', ImageToBBox, self.handle_image_bbox)
+        s = rospy.Service('object_detection', ImageToObject, self.handle_image_objects)
+        #s = rospy.Service('object_detection', ImageToBBox, self.handle_image_bbox)
         print "Ready for Object Detection"
         rospy.spin()
