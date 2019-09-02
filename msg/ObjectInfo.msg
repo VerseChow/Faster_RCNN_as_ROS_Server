@@ -7,3 +7,4 @@ int32[] bbox_ymin
 int32[] bbox_xmax
 int32[] bbox_ymax
 float32[] score
+geometry_msgs/Point location
